@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     NN = [100, 1000, 10000, 100000, 500000, 1000000, 10000000]
 
-    data = generate_trees(1000000)
+    data = generate_trees(max(NN))
     dids = range(len(data))
     datasets = {
         n: [data[did] for did in random.sample(dids, n)]
