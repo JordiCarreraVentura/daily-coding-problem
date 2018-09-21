@@ -7,77 +7,73 @@ import time
 
 
 def On(tree):
-    return len([x for x in tree])
-#     return len(tree)
+    nodes = 0
+    for parent, children in tree:
+        nodes += sum([1 for child in children if child != None])
+    return nodes + 1
 
 
 def _On(tree, n=100):
-    q = 0
-    while True:
-        slice = tree[:n]
-        if len(slice) == n:
-            q += n
-            tree = tree[n:]
+    nodes = 0
+    for i in range(len(tree) - 1, -1, -1):
+        parent, children = tree[i]
+        weight = sum([1 for child in children if child != None])
+        if not weight:
+            nodes += 1
+        elif weight == 1:
+            nodes += 2
         else:
-            q += len(slice)
+            nodes += i
             break
-    return q
+    return nodes + 1
 
 
 def generate_trees(n):
-
-    def populate_non_terminals(curr, levels):
-        tree = [(True, None, 1)]
-        while max([x[1] for x in tree]) < levels - 1:
+    trees = []
+    for i in range(n):
+        levels = random.randrange(3, 7)
+        tree = [(True, 1, (2, 3))]
+        curr = 3
+        while max([a for _, a, b in tree]) < levels:
             _tree = []
-            extension = []
             for node in tree:
-                active, parent, num = node
+                active, parent, (n1, n2) = node
                 if not active:
                     _tree.append(node)
                 else:
-                    a = (True, num, curr + 1)
-                    b = (True, num, curr + 2)
-                    curr += 2
-                    _node = (False, parent, num)
-                    _tree.append(_node)
-                    extension += [a, b]
-            tree = _tree + extension
-        return curr, tree
-
-    def populate_terminals(curr, tree):
-        _tree = []
-        extension = []
-        for i, node in enumerate(tree):
-            active, parent, num = node
-            if not active:
-                _tree.append((parent, num))
-            else:
-                branch = random.random() > 0.5
-                if not branch:
-                    _tree.append((parent, num))
-                    if i < len(tree) - 1:
-                        _tree += [(p, n) for _, p, n in tree[i + 1:]]
-                    break
+                    _tree.append((False, parent, (n1, n2)))
+                    _tree.append((True, n1, (curr + 1, curr + 2)))
+                    _tree.append((True, n2, (curr + 3, curr + 4)))
+                    curr += 4
+            tree = _tree
+        
+        branching = 1
+        while branching > 0:
+            _tree = []
+            for node in tree:
+                active, parent, (n1, n2) = node
+                if not active:
+                    _tree.append(node)
                 else:
-                    _tree.append((parent, num))
-                    a = (num, curr + 1)
-                    b = (num, curr + 2)
-                    extension += [a, b]
-                    curr += 2
-        return _tree + extension
+                    _tree.append((False, parent, (n1, n2)))
+                    if branching == 1:
+                        _tree.append((False, n1, (curr + 1, None)))
+                        _tree.append((False, n2, (None, None)))
+                        curr += 1
+                        branching -= 1
+                    else:
+                        _tree.append((False, n1, (None, None)))
+                        _tree.append((False, n2, (None, None)))
+                d = random.random()
+                if d < 0.5:
+                    branching -= 1
+            tree = _tree
 
-    curr = 1
-    trees = []
-    for i in range(n):
-        levels = random.randrange(3, 25)
-        curr, tree = populate_non_terminals(curr, levels)
-        tree = populate_terminals(curr, tree)
-        trees.append(tree)
+        trees.append(sorted([(parent, children) for (_, parent, children) in tree]))
     return trees
 
 
-def chron(f, test, slice_size=slice):
+def chron(f, test, slice_size=0):
     start = time.time()
     if slice_size and f == _On:
         f(test, n=slice)
@@ -88,9 +84,20 @@ def chron(f, test, slice_size=slice):
 
 if __name__ == '__main__':
 
-    NN = [100, 1000, 10000, 100000, 500000, 1000000, 10000000]
+#     NN = [100, 1000, 10000, 100000, 1000000, 10000000]
+    NN = [100, 1000, 10000, 100000, 1000000]
+#     NN = [5]
 
     data = generate_trees(max(NN))
+    
+#     for tree in data:
+#         for node in tree:
+#             print node
+#         print On(tree)
+#         print _On(tree)
+#         print
+#     exit()
+    
     dids = range(len(data))
     datasets = {
         n: [data[did] for did in random.sample(dids, n)]
@@ -98,8 +105,6 @@ if __name__ == '__main__':
     }    
 
     for slice in [5, 10, 20, 50, 75, 100]:
-
-        _first = None
         
         for n in NN:
 
@@ -108,18 +113,11 @@ if __name__ == '__main__':
             On_times = []
             _On_times = []
             for test in tests:
-                On_time = chron(On, test, slice_size=slice)
-                _On_time = chron(_On, test)
+                On_time = chron(On, test)
+                _On_time = chron(_On, test, slice_size=slice)
                 On_times.append(On_time)
                 _On_times.append(_On_time)
-
             On_avg = sum(On_times) / len(On_times)
             _On_avg = sum(_On_times) / len(_On_times)
         
-            if not _first:
-                _first = On_avg / n
-                print slice, n, '\tOn_avg', On_avg, '\t_On_avg', _On_avg
-            else:
-                r = (sum(On_times) / n) / _first
-                _r = (sum(_On_times) / n) / _first
-                print slice, n, '\tOn_avg', On_avg, r, '\t_On_avg', _On_avg, _r
+            print slice, n, sum(On_times), sum(_On_times)
