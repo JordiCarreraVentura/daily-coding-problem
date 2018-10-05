@@ -113,8 +113,7 @@ def pc_move(player, board):
 
 
 def user_move(player, board):
-    for row in board:
-        print row
+    display(board)
     while True:
         q = raw_input('move? (%s) (15,56, ...)>' % player)
         if not q:
@@ -128,7 +127,7 @@ def user_move(player, board):
             continue
 
 
-def apply(player, move, board):
+def apply_move(player, move, board):
     m, n = move
     try:
         board[m][n] = player
@@ -142,6 +141,13 @@ def is_win(status, winner):
             print winner
         return True
     return False
+
+
+def display(board):
+    print range(len(board[0]))
+    for i, row in enumerate(board):
+        print [len(board) - (i + 1)] + row
+    
 
 
 if __name__ == '__main__':
@@ -176,8 +182,5 @@ if __name__ == '__main__':
         status, winner = end_game(player1, player2, board)
         if is_win(status, winner):
             break
-            
-    for row in board:
-        print row
     
-
+    display(board)
