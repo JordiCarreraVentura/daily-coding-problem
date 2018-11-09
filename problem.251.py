@@ -179,14 +179,20 @@ if __name__ == '__main__':
     #   bucket size 10**-2 smaller.
     
     n_buckets = 1000
+    int_stream = IntStream()
+#     x = [i for i in int_stream]
+#     print len(x)
+#     raw_input()
+
     dispatcher = 1000000000 / n_buckets
     bucket = 0
     last = time.time()
     while bucket <= n_buckets:
         sortable = []
-        for n, i in enumerate(int_stream):
-            _bucket = i / dispatcher
-            if _bucket == bucket:
+#         for n, i in enumerate(int_stream):
+#             _bucket = i / dispatcher
+#             if _bucket == bucket:
+        for n, i in enumerate(int_stream(bucket, dispatcher)):
                 sortable.append(i)
         print bucket, len(sortable), '%s...' % str(sortable[:5]), '%s...' % (str(sorted(sortable)[:5]))
         print time.time() - last, bucket, len(sortable), '%s...' % str(sortable[:5]), '%s...' % (str(sorted(sortable)[:5]))
