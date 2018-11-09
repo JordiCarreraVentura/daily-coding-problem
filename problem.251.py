@@ -17,16 +17,19 @@ def new_int():
     return random.randrange(0, 1000000000)
         
 
-        self.ints = list([new_int() for _ in range(1000000)])
 class IntStream:            
 
-    def __iter__(self):
-        for i in self.ints:
-            yield i
+    def __init__(self, n=1000000):
 
 #         self.ints = list([new_int() for _ in range(1000000)])
+        self.c = 0
+        self.n = n
 
 class Bucket:
+    def __call__(self, bucket, dispatcher):
+        for i in self:
+            if i / dispatcher == bucket:
+                yield i
 
     def __init__(self, maxref=1000000000, n_buckets=1000):
         self.buckets = dict([])
