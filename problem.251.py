@@ -8,6 +8,7 @@ import collections
 import json
 import math
 import random
+import time
 
 from collections import Counter
 
@@ -162,6 +163,7 @@ if __name__ == '__main__':
     n_buckets = 1000
     dispatcher = 1000000000 / n_buckets
     bucket = 0
+    last = time.time()
     while bucket <= n_buckets:
         sortable = []
         for n, i in enumerate(int_stream):
@@ -169,6 +171,8 @@ if __name__ == '__main__':
             if _bucket == bucket:
                 sortable.append(i)
         print bucket, len(sortable), '%s...' % str(sortable[:5]), '%s...' % (str(sorted(sortable)[:5]))
+        print time.time() - last, bucket, len(sortable), '%s...' % str(sortable[:5]), '%s...' % (str(sorted(sortable)[:5]))
+        last = time.time()
         bucket += 1
     exit()
     
