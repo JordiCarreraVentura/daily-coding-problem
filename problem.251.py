@@ -178,12 +178,12 @@ if __name__ == '__main__':
     #   time for each bucket constant and the memory usage to just 2x that of a
     #   bucket size 10**-2 smaller.
     
-    n_buckets = 1000
     int_stream = IntStream()
 #     x = [i for i in int_stream]
 #     print len(x)
 #     raw_input()
 
+    n_buckets = 100
     dispatcher = 1000000000 / n_buckets
     bucket = 0
     last = time.time()
