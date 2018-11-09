@@ -118,6 +118,8 @@ if __name__ == '__main__':
         1000000000, 500000000, 5000000,  # maxref
         1000, 100, 10, 5, 2, 0,          # base linear trend
     ]
+    #   By not storing the whole list in memory but streaming its values instead
+    #   and then sorting buckets thereof, memory usage is 10x lower.
     
     tests_b = [
         611894298, 112311810,            # all 1s
@@ -158,7 +160,15 @@ if __name__ == '__main__':
 #             print n, bucket
 #     print bucket
 #     exit()
+    #   Performance-wise, though, speed is significantly lower. Bucket-processing
+    #   forces to perform several passess on the original list of items; although
+    #   the memory usage in each pass is far smaller, the time spent on all those
+    #   extra passes is far greater.
     
+    #   Setting a higher bucket size helps; it dramatically decreases the number of
+    #   passes, which is the most time-consuming step, while keeping the sorting
+    #   time for each bucket constant and the memory usage to just 2x that of a
+    #   bucket size 10**-2 smaller.
     
     n_buckets = 1000
     dispatcher = 1000000000 / n_buckets
