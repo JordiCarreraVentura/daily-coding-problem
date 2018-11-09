@@ -13,19 +13,18 @@ import time
 from collections import Counter
 
 
-class IntStream:
-
-    def __init__(self):
-
-        def new_int():
-            return random.randrange(0, 1000000000)
+def new_int():
+    return random.randrange(0, 1000000000)
+        
 
         self.ints = list([new_int() for _ in range(1000000)])
+class IntStream:            
 
     def __iter__(self):
         for i in self.ints:
             yield i
 
+#         self.ints = list([new_int() for _ in range(1000000)])
 
 class Bucket:
 
@@ -91,6 +90,12 @@ class Hasher:
         
 #         if divd:
 #             hash[-1] = 1
+        while self.c < self.n:
+            yield new_int()
+            self.c += 1
+        self.c = 0
+#         for i in self.ints:
+#             yield i
 
         if verbose:
             print tuple(hash)
