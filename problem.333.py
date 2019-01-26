@@ -119,18 +119,22 @@ if __name__ == '__main__':
 #     sizes = [10, 100, 1000]
     
     times = deft(list)
+    err = 0
     for i in range(n_experiments):
         size = random.choice(sizes)
         celebrity_status = int(round(math.log(size, 2))) * 10
         people = range(size)
-        celebrity_status = celebrity_status if celebrity_status >= 10 else 10
+#         celebrity_status = celebrity_status if celebrity_status >= 10 else 10
+        celebrity_status = 15 if celebrity_status >= 10 else 10
         celebrity = random.randrange(0, size)
         connections = init_connections(people[celebrity], people)
         start = time.time()
         found = find_celebrity(size, celebrity_status, people, celebrity, connections)
         duration = time.time() - start
         times[size].append(duration)
-        print i, size, celebrity, found, duration
+        if celebrity != found:
+            err += 1
+        print i, size, '>> %d <<' % err, celebrity, found, duration
     
     durations = [
         (size, sum(_durations) / len(_durations))
